@@ -28,7 +28,7 @@ COPY --from=build /build/target/technical-portfolio-*.jar app.jar
 USER appuser
 
 # Expose port (adjust if your app uses a different port)
-EXPOSE 8080
+EXPOSE 8081
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
