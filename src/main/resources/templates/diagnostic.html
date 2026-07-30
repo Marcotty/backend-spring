@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>technical-portfolio — Diagnostic serveur</title>
+    <meta http-equiv="refresh" content="5">
+    <style>
+        :root {
+            --bg: #0A1628; --panel: #0F2138; --line: #1C3A5E;
+            --amber: #E8A33D; --cyan: #4FD1C5; --text: #E8EDF2; --muted: #7C93AD;
+            --danger: #E8636B;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: var(--bg); color: var(--text);
+            font-family: 'IBM Plex Mono', 'Courier New', monospace;
+            padding: 40px;
+        }
+        .top-row { display: flex; align-items: flex-start; justify-content: space-between; }
+        h1 { font-size: 20px; margin-bottom: 4px; }
+        h2 { font-size: 15px; margin: 40px 0 14px; color: var(--text); }
+        .sub { color: var(--muted); font-size: 13px; margin-bottom: 30px; }
+        .stats { display: flex; gap: 16px; margin-bottom: 30px; }
+        .stat {
+            background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+            padding: 16px 22px;
+        }
+        .stat .label { font-size: 11px; color: var(--muted); text-transform: uppercase; }
+        .stat .value { font-size: 22px; font-weight: bold; color: var(--cyan); margin-top: 4px; }
+
+        table { width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+        th, td { text-align: left; padding: 10px 14px; font-size: 12.5px; vertical-align: top; }
+        th { color: var(--muted); text-transform: uppercase; font-size: 11px; border-bottom: 1px solid var(--line); }
+        td { border-bottom: 1px solid #152a44; }
+        .methode { padding: 2px 7px; border-radius: 4px; font-size: 11px; }
+        .GET { background: rgba(79,209,197,0.15); color: var(--cyan); }
+        .POST { background: rgba(232,163,61,0.15); color: var(--amber); }
+        .PUT, .DELETE { background: rgba(232,99,107,0.15); color: var(--danger); }
+        .SYSTEM { background: rgba(124,147,173,0.2); color: var(--muted); }
+        .empty { color: var(--muted); padding: 20px; text-align: center; }
+
+        .tech-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+        .tech-card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; }
+        .tech-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .tech-name { font-size: 13.5px; font-weight: bold; }
+        .badge { padding: 3px 9px; border-radius: 20px; font-size: 10.5px; text-transform: uppercase; }
+        .badge.ok { background: rgba(79,209,197,0.15); color: var(--cyan); }
+        .badge.warn { background: rgba(232,163,61,0.15); color: var(--amber); }
+        .badge.todo { background: rgba(232,99,107,0.12); color: var(--danger); }
+        .tech-desc { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 8px; }
+        .tech-exemple {
+            font-size: 11.5px; color: var(--text); background: #0a1a2e; border-left: 2px solid var(--cyan);
+            padding: 8px 10px; border-radius: 4px; line-height: 1.5;
+        }
+        @media (max-width: 900px) { .tech-grid { grid-template-columns: 1fr; } }
+
+        /* --- Panneau d'options (engrenage) --- */
+        .settings { position: relative; }
+        .settings summary {
+            list-style: none; cursor: pointer; width: 38px; height: 38px; border-radius: 8px;
+            background: var(--panel); border: 1px solid var(--line); display: flex;
+            align-items: center; justify-content: center; font-size: 18px; user-select: none;
+        }
+        .settings summary::-webkit-details-marker { display: none; }
+        .settings[open] summary { border-color: var(--cyan); }
+        .settings-panel {
+            position: absolute; right: 0; top: 46px; width: 260px;
+            background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+            padding: 16px; z-index: 10;
+        }
+        .settings-panel .titre { font-size: 11px; color: var(--muted); text-transform: uppercase; margin-bottom: 10px; }
+        .settings-panel label {
+            display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 8px 6px;
+            border-radius: 6px; cursor: pointer;
+        }
+        .settings-panel label:hover { background: #152a44; }
+        .settings-panel .actif { color: var(--cyan); font-size: 10px; margin-left: auto; }
+        .settings-panel button {
+            margin-top: 10px; width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--cyan);
+            background: transparent; color: var(--cyan); font-family: inherit; font-size: 12px; cursor: pointer;
+        }
+        .settings-panel button:hover { background: rgba(79,209,197,0.1); }
+        .settings-panel .note {
+            font-size: 10.5px; color: var(--muted); margin-top: 10px; line-height: 1.5;
+            border-top: 1px solid var(--line); padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-row">
+    <div>
+        <h1>⚙ technical-portfolio — Diagnostic serveur</h1>
+        <p class="sub">Page rendue côté Spring (Thymeleaf) — se rafraîchit automatiquement toutes les 5s.</p>
+    </div>
+
+    <!-- Panneau d'options : <details>/<summary> natif HTML5, zéro JavaScript nécessaire -->
+    <details class="settings">
+        <summary>⚙</summary>
+        <div class="settings-panel">
+            <div class="titre">Base de données active</div>
+            <form method="post" th:action="@{/diagnostic/basculer-db}">
+                <label>
+                    <input type="radio" name="base" value="h2" th:checked="${baseActive == 'h2'}">
+                    H2 (mémoire)
+                    <span class="actif" th:if="${baseActive == 'h2'}">● actif</span>
+                </label>
+                <label>
+                    <input type="radio" name="base" value="postgres" th:checked="${baseActive == 'postgres'}">
+                    PostgreSQL
+                    <span class="actif" th:if="${baseActive == 'postgres'}">● actif</span>
+                </label>
+                <button type="submit">Basculer</button>
+            </form>
+            <div class="note">
+                PostgreSQL doit tourner (docker compose up) et déjà posséder son schéma —
+                voir le journal ci-dessous pour le détail de chaque tentative de bascule.
+            </div>
+        </div>
+    </details>
+</div>
+
+<div class="stats">
+    <div class="stat">
+        <div class="label">Uptime</div>
+        <div class="value" th:text="${uptimeFormate}">0h 00m 00s</div>
+    </div>
+    <div class="stat">
+        <div class="label">Projets en base</div>
+        <div class="value" th:text="${nombreProjets}">0</div>
+    </div>
+    <div class="stat">
+        <div class="label">Base active</div>
+        <div class="value" th:text="${baseActive}">h2</div>
+    </div>
+</div>
+
+<table>
+    <thead>
+        <tr><th>Heure</th><th>Méthode</th><th>Chemin</th><th>Origine</th></tr>
+    </thead>
+    <tbody>
+        <tr th:if="${#lists.isEmpty(requetes)}">
+            <td colspan="4" class="empty">Aucune requête reçue pour l'instant.</td>
+        </tr>
+        <tr th:each="r : ${requetes}">
+            <td th:text="${r.heureFormatee}">00:00:00</td>
+            <td><span class="methode" th:classappend="${r.methode}" th:text="${r.methode}">GET</span></td>
+            <td th:text="${r.chemin}">/api/projets</td>
+            <td th:text="${r.origine}">localhost</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>📋 Technologies à intégrer — extraites d'une offre d'emploi (stack Java)</h2>
+<div class="tech-grid">
+    <div class="tech-card" th:each="t : ${technologies}">
+        <div class="tech-top">
+            <span class="tech-name" th:text="${t.nom}">Nom techno</span>
+            <span class="badge" th:classappend="${t.statutClasse}" th:text="${t.statutLabel}">statut</span>
+        </div>
+        <div class="tech-desc" th:text="${t.description}">Description</div>
+        <div class="tech-exemple" th:text="${t.exemple}">Exemple</div>
+    </div>
+</div>
+
+</body>
+</html>
