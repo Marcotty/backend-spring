@@ -40,10 +40,9 @@ public class TechnologieWatchlistService {
 
         new Technologie(
             "Base de données relationnelle (PostgreSQL)",
-            A_FAIRE,
-            "Actuellement en H2 (mémoire, non persistante). PostgreSQL est la référence en entreprise pour une vraie persistance.",
-            "À faire : ajouter le driver PostgreSQL + un service dans le compose.yaml (Spring Boot " +
-            "Docker Compose Support gère la connexion automatiquement, comme vu précédemment)."
+            IMPLEMENTE,
+            "Base relationnelle principale du projet, avec JPA/Hibernate pour la persistance.",
+            "ProjetRepository est un JpaRepository standard, avec PostgreSQL en production et H2 pour les tests."
         ),
 
         new Technologie(
@@ -72,9 +71,9 @@ public class TechnologieWatchlistService {
 
         new Technologie(
             "Docker",
-            EN_COURS,
-            "Docker Compose Support ajouté au projet, mais l'application Spring elle-même n'a jamais été packagée en image.",
-            "Reste à faire : `./mvnw spring-boot:build-image` pour obtenir une vraie image Docker de ce backend."
+            IMPLEMENTE,
+            "Docker Compose Support ajouté au projet, et packaging en image et run dans un container.",
+            "."
         ),
 
         new Technologie(
@@ -95,10 +94,9 @@ public class TechnologieWatchlistService {
 
         new Technologie(
             "Git",
-            EN_COURS,
-            "Gestion de version — à vérifier si un vrai historique de commits structuré est en place sur ce projet.",
-            "Bonne pratique à prendre dès maintenant : un commit par fonctionnalité, avec des messages clairs " +
-            "(ex: 'feat: ajoute la page de diagnostic Thymeleaf')."
+            IMPLEMENTE,
+            "Gestion de version - Historique des commits, branches, merges, tags, etc.",
+            "Le projet est versionné sur GitHub, avec des commits réguliers et des branches pour les fonctionnalités."
         ),
 
         new Technologie(
