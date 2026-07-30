@@ -1,1 +1,16 @@
-services: {}
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./src:/app/src  # Sync source code into container
+    environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app/src
+        - action: rebuild
+          path: pom.xml
