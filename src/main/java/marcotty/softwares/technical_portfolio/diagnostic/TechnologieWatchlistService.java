@@ -32,10 +32,10 @@ public class TechnologieWatchlistService {
 
         new Technologie(
             "CI/CD",
-            A_FAIRE,
-            "Automatiser build + tests à chaque push, pour détecter les régressions sans lancer les tests à la main.",
-            "À faire : un pipeline GitHub Actions simple qui lance `mvn test` à chaque push, " +
-            "puis ajoute `mvn spring-boot:build-image` une fois les tests passés."
+            IMPLEMENTE,
+            "Build + tests automatisés à chaque push, pour détecter les régressions sans lancer les tests à la main.",
+            "Pipeline GitHub Actions simple qui lance `mvnw test` à chaque push, " +
+            "puis ajoute `./mvnw spring-boot:build-image` une fois les tests passés pour construire l'image Docker."
         ),
 
         new Technologie(
