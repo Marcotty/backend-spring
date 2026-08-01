@@ -11,6 +11,8 @@ import static marcotty.softwares.technical_portfolio.diagnostic.Technologie.Stat
 @Service
 public class TechnologieWatchlistService {
 
+    private static final String GITHUB_REPO_URL = "https://github.com/Marcotty/backend-spring";
+
     // Objectif : garder une trace visible de ce qui reste à explorer, avec un exemple concret
     // à reproduire plus tard dans le projet Java Mastery pour chaque techno.
     private final List<Technologie> technologies = List.of(
@@ -25,39 +27,33 @@ public class TechnologieWatchlistService {
         new Technologie(
             "Tests unitaires & d'intégration (JUnit + Mockito)",
             IMPLEMENTE,
-            "Tests d'intégration avec @SpringBootTest et @AutowiredMockMVC sur le contrôleur REST",
-            "ProjetServiceTest teste le service avec un repository mocké, sans toucher à la vraie base de données."
+            "Cycle Red-Green-Refactor appliqué : test unitaire du Service (repository mocké) et test d'intégration du contrôleur REST.",
+            "ProjetServiceTest (Mockito) + ProjetRestControllerTest (@SpringBootTest, MockMvc, base H2 nettoyée avant chaque test)."
         ),
 
         new Technologie(
             "CI/CD",
             IMPLEMENTE,
-            "Build + tests automatisés à chaque push, pour détecter les régressions sans lancer les tests à la main.",
-            "Pipeline GitHub Actions simple qui lance `mvnw test` à chaque push, " +
-            "puis ajoute `./mvnw spring-boot:build-image` une fois les tests passés pour construire l'image Docker."
+            "Pipeline GitHub Actions : lance les tests à chaque push, construit l'image Docker uniquement si les tests passent.",
+            ".github/workflows/ci.yml — deux jobs, dépendance explicite via 'needs: test'. mvnw rendu exécutable en Git et en CI.",
+            GITHUB_REPO_URL + "/actions",
+            "Voir les runs sur GitHub"
         ),
 
         new Technologie(
             "Base de données relationnelle (PostgreSQL)",
             IMPLEMENTE,
-            "Base relationnelle principale du projet, avec JPA/Hibernate pour la persistance.",
-            "ProjetRepository est un JpaRepository standard, avec PostgreSQL en production et H2 pour les tests."
+            "PostgreSQL tourne en conteneur Docker. Bascule H2 ↔ PostgreSQL possible à chaud via AbstractRoutingDataSource.",
+            "Panneau ⚙ sur la page de diagnostic : teste la connexion avant bascule, log chaque étape (RoutingDataSource + DatabaseContext)."
         ),
 
         new Technologie(
             "Base de données NoSQL (MongoDB)",
             IMPLEMENTE,
-            "Utile pour des données non structurées ou évolutives (ex: logs, historique d'activité).",
-            "Le journal des requêtes (RequestLogEntry) est persistant dans MongoDB " +
-            "plutôt qu'en mémoire, pour qu'il survive à un redémarrage. API REST pour consulter l'historique complet via LogsApiController et RequestLogService."
-        ),
-
-        new Technologie(
-            "GraphQL",
-            IMPLEMENTE,
-            "Alternative à REST où le client choisit précisément les champs qu'il veut recevoir.",
-            "GET /api/projets en GraphQL avec `spring-boot-starter-graphql`, " +
-            "ProjetGraphQLController et schema.graphqls déjà en place."
+            "Le journal des requêtes (RequestLogEntry) persiste maintenant dans MongoDB plutôt qu'en mémoire — survit aux redémarrages.",
+            "RequestLogDocument + RequestLogMongoRepository. La liste en mémoire reste pour l'affichage rapide (30 dernières), Mongo garde tout l'historique.",
+            "/api/logs/historique",
+            "Voir l'historique (JSON)"
         ),
 
         new Technologie(
@@ -69,9 +65,20 @@ public class TechnologieWatchlistService {
 
         new Technologie(
             "SWAGGER / OpenAPI",
-            A_FAIRE,
-            "Outil pour documenter et tester les API REST.",
-            "Documentation Swagger générée automatiquement, avec possibilité de tester les endpoints directement depuis l'interface."
+            IMPLEMENTE,
+            "Documentation interactive générée automatiquement depuis les annotations des contrôleurs REST.",
+            "springdoc-openapi-starter-webmvc-ui — interface testable sur /swagger-ui.html, JSON brut sur /v3/api-docs.",
+            "/swagger-ui.html",
+            "Ouvrir Swagger UI"
+        ),
+
+        new Technologie(
+            "GraphQL",
+            IMPLEMENTE,
+            "Endpoint /graphql en plus de REST — le client choisit précisément les champs qu'il veut recevoir.",
+            "ProjetGraphQLController + schema.graphqls. Testé via Postman (POST avec query/variables) et GraphiQL.",
+            "/graphiql",
+            "Ouvrir GraphiQL"
         ),
 
         new Technologie(
@@ -84,9 +91,10 @@ public class TechnologieWatchlistService {
 
         new Technologie(
             "Docker",
-            IMPLEMENTE,
-            "Docker Compose Support ajouté au projet, et packaging en image et run dans un container.",
-            "."
+            EN_COURS,
+            "PostgreSQL tourne en conteneur (Docker Compose Support). L'application Spring elle-même n'est pas encore packagée en image.",
+            "Reste à faire : `./mvnw spring-boot:build-image` pour obtenir une vraie image Docker de ce backend, " +
+            "puis faire de même côté Angular (build + Dockerfile Nginx)."
         ),
 
         new Technologie(
@@ -108,8 +116,10 @@ public class TechnologieWatchlistService {
         new Technologie(
             "Git",
             IMPLEMENTE,
-            "Gestion de version - Historique des commits, branches, merges, tags, etc.",
-            "Le projet est versionné sur GitHub, avec des commits réguliers et des branches pour les fonctionnalités."
+            "Dépôt versionné sur GitHub, avec permissions d'exécution correctement gérées (mvnw) pour un fonctionnement fiable en CI.",
+            "git update-index --chmod=+x mvnw — pour que le bit d'exécution survive au checkout, peu importe l'OS source.",
+            GITHUB_REPO_URL,
+            "Voir le dépôt"
         ),
 
         new Technologie(
