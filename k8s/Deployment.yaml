@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: technical-portfolio-deployment
+spec:
+  replicas: 2   # volontairement 2, pas 1 : pour observer la répartition entre Pods
+  selector:
+    matchLabels:
+      app: technical-portfolio
+  template:
+    metadata:
+      labels:
+        app: technical-portfolio   # doit correspondre au selector ci-dessus — c'est CE
+                                    # label que le Service utilisera pour trouver ces Pods
+    spec:
+      containers:
+        - name: backend
+          image: technical-portfolio:latest
+          imagePullPolicy: Never   # ne JAMAIS essayer de pull depuis un registre —
+                                    # utilise uniquement l'image chargée via `minikube image load`
+          ports:
+            - containerPort: 8080
+          env:
+            # Désactive Docker Compose Support : aucun sens dans un Pod Kubernetes,
+            # qui n'a ni Docker ni accès à ton compose.yaml
+            - name: SPRING_DOCKER_COMPOSE_ENABLED
+              value: "false"
+          resources:
+            requests:               # ce que le Pod réserve au minimum
+              memory: "512Mi"
+              cpu: "250m"
+            limits:                 # le plafond, au-delà Kubernetes tue/redémarre le Pod
+              memory: "1Gi"
+              cpu: "500m"

@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import static marcotty.softwares.technical_portfolio.diagnostic.Technologie.Statut.A_FAIRE;
 import static marcotty.softwares.technical_portfolio.diagnostic.Technologie.Statut.EN_COURS;
 import static marcotty.softwares.technical_portfolio.diagnostic.Technologie.Statut.IMPLEMENTE;
 
@@ -98,10 +97,9 @@ public class TechnologieWatchlistService {
 
         new Technologie(
             "Kubernetes",
-            A_FAIRE,
-            "Orchestrateur de conteneurs à grande échelle — gère le déploiement, la montée en charge et la résilience automatiquement.",
-            "À explorer une fois plusieurs projets conteneurisés : déployer le portfolio complet sur un " +
-            "cluster local (ex: Minikube ou Docker Desktop Kubernetes intégré)."
+            IMPLEMENTE,
+            "Déploiement sur Google Cloud Run (serverless, basé sur Kubernetes) — l'app est packagée en image Docker et déployée automatiquement.",
+            "Cloud Run gère le scaling automatique, la mise à jour de l'image et la configuration réseau. Le backend est accessible publiquement via HTTPS."
         ),
 
         new Technologie(
