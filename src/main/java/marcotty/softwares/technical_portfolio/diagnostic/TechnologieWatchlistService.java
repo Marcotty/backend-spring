@@ -55,10 +55,24 @@ public class TechnologieWatchlistService {
 
         new Technologie(
             "GraphQL",
-            A_FAIRE,
+            IMPLEMENTE,
             "Alternative à REST où le client choisit précisément les champs qu'il veut recevoir.",
-            "À faire, en piste future : réécrire GET /api/projets en GraphQL avec `spring-boot-starter-graphql`, " +
-            "et comparer le nombre de requêtes nécessaires depuis Angular."
+            "GET /api/projets en GraphQL avec `spring-boot-starter-graphql`, " +
+            "ProjetGraphQLController et schema.graphqls déjà en place."
+        ),
+
+        new Technologie(
+            "POSTMAN",
+            IMPLEMENTE,
+            "Outil pour tester les API REST et GraphQL.",
+            "Collection Postman contenant des requêtes pour tester GET /api/projets et autres endpoints."
+        ),
+
+        new Technologie(
+            "SWAGGER / OpenAPI",
+            A_FAIRE,
+            "Outil pour documenter et tester les API REST.",
+            "Documentation Swagger générée automatiquement, avec possibilité de tester les endpoints directement depuis l'interface."
         ),
 
         new Technologie(
