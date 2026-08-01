@@ -23,6 +23,9 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'   # met en cache ~/.m2 entre les runs : builds bien plus rapides
 
+      - name: Rendre mvnw exécutable
+        run: chmod +x mvnw
+
       - name: Lancer les tests (ProjetServiceTest, ProjetRestControllerTest...)
         run: ./mvnw -B test
         # -B = mode "batch" (pas de sortie interactive), standard pour un environnement CI
@@ -42,6 +45,9 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: 'maven'
+
+      - name: Rendre mvnw exécutable
+        run: chmod +x mvnw
 
       - name: Construire l'image avec les Cloud Native Buildpacks
         run: ./mvnw -B spring-boot:build-image -DskipTests
