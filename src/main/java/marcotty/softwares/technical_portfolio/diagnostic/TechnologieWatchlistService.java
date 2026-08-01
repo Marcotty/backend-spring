@@ -11,7 +11,6 @@ import static marcotty.softwares.technical_portfolio.diagnostic.Technologie.Stat
 @Service
 public class TechnologieWatchlistService {
 
-    // Liste extraite d'une offre d'emploi "Backend Developer" — filtrée sur la stack Java.
     // Objectif : garder une trace visible de ce qui reste à explorer, avec un exemple concret
     // à reproduire plus tard dans le projet Java Mastery pour chaque techno.
     private final List<Technologie> technologies = List.of(
@@ -47,10 +46,10 @@ public class TechnologieWatchlistService {
 
         new Technologie(
             "Base de données NoSQL (MongoDB)",
-            A_FAIRE,
+            IMPLEMENTE,
             "Utile pour des données non structurées ou évolutives (ex: logs, historique d'activité).",
-            "À faire, en piste future : stocker le journal des requêtes (RequestLogEntry) dans MongoDB " +
-            "plutôt qu'en mémoire, pour qu'il survive à un redémarrage."
+            "Le journal des requêtes (RequestLogEntry) est persistant dans MongoDB " +
+            "plutôt qu'en mémoire, pour qu'il survive à un redémarrage. API REST pour consulter l'historique complet via LogsApiController et RequestLogService."
         ),
 
         new Technologie(
