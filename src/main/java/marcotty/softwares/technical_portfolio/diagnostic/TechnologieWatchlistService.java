@@ -91,10 +91,9 @@ public class TechnologieWatchlistService {
 
         new Technologie(
             "Docker",
-            EN_COURS,
-            "PostgreSQL tourne en conteneur (Docker Compose Support). L'application Spring elle-même n'est pas encore packagée en image.",
-            "Reste à faire : `./mvnw spring-boot:build-image` pour obtenir une vraie image Docker de ce backend, " +
-            "puis faire de même côté Angular (build + Dockerfile Nginx)."
+            IMPLEMENTE,
+            "Backend packagé en image Docker (Cloud Native Buildpacks) et exécuté en conteneur, aux côtés de PostgreSQL et MongoDB.",
+            "./mvnw spring-boot:build-image, puis docker run — l'app tourne entièrement conteneurisée, plus besoin de VS Code/mvnw pour la lancer."
         ),
 
         new Technologie(
