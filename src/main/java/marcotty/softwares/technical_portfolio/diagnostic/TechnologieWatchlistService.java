@@ -106,11 +106,13 @@ public class TechnologieWatchlistService {
 
         new Technologie(
             "Cloud (AWS / Azure / GCP)",
-            A_FAIRE,
-            "Hébergement en production — actuellement tout tourne en local uniquement.",
-            "À faire, en piste future : déployer une image Docker construite plus haut sur un service " +
-            "managé simple (ex: AWS App Runner ou Azure Container Apps) pour voir le portfolio en ligne."
+            IMPLEMENTE,
+            "Backend déployé sur Google Cloud Run, réutilisant le compte GCP déjà lié à un projet Firebase existant.",
+            "Pipeline CI/CD complet : push sur main → tests → build image → push Artifact Registry → déploiement automatique.",
+            "https://technical-portfolio-453237497619.europe-west1.run.app/",
+            "Voir le site en ligne"
         ),
+
 
         new Technologie(
             "Git",
