@@ -24,7 +24,6 @@ jobs:
           cache: 'maven'   # met en cache ~/.m2 entre les runs : builds bien plus rapides
 
       - name: Lancer les tests (ProjetServiceTest, ProjetRestControllerTest...)
-        working-directory: ./backend-spring
         run: ./mvnw -B test
         # -B = mode "batch" (pas de sortie interactive), standard pour un environnement CI
 
@@ -45,6 +44,5 @@ jobs:
           cache: 'maven'
 
       - name: Construire l'image avec les Cloud Native Buildpacks
-        working-directory: ./backend-spring
         run: ./mvnw -B spring-boot:build-image -DskipTests
         # -DskipTests : les tests ont déjà tourné dans le job précédent, pas besoin de les relancer ici
