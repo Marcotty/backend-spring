@@ -1,29 +1,58 @@
 package marcotty.softwares.technical_portfolio.diagnostic;
 
-import org.springframework.stereotype.Service;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 @Service
 public class RequestLogService {
 
-    // Nombre maximum d'entrées gardées en mémoire, pour éviter une croissance infinie
-    private static final int TAILLE_MAX = 30;
+    private static final Logger log = LoggerFactory.getLogger(RequestLogService.class);
+    private static final int TAILLE_MAX_MEMOIRE = 30;
 
-    // CopyOnWriteArrayList : thread-safe, adapté ici puisqu'on a beaucoup plus de
-    // lectures (affichage) que d'écritures (une requête à la fois), sans synchronisation manuelle
-    private final List<RequestLogEntry> entrees = new CopyOnWriteArrayList<>();
+    private final List<RequestLogEntry> entreesMemoire = new CopyOnWriteArrayList<>();
+    private final RequestLogMongoRepository mongoRepository;
+
+    public RequestLogService(RequestLogMongoRepository mongoRepository) {
+        this.mongoRepository = mongoRepository;
+    }
 
     public void enregistrer(String methode, String chemin, String origine) {
-        entrees.add(0, new RequestLogEntry(methode, chemin, origine)); // le plus récent en premier
-        while (entrees.size() > TAILLE_MAX) {
-            entrees.remove(entrees.size() - 1);
+        // 1) Affichage rapide : liste en mémoire, jamais bloquant
+        entreesMemoire.add(0, new RequestLogEntry(methode, chemin, origine));
+        while (entreesMemoire.size() > TAILLE_MAX_MEMOIRE) {
+            entreesMemoire.remove(entreesMemoire.size() - 1);
+        }
+
+        // 2) Persistance MongoDB — ENTOURÉE d'un try/catch volontairement : si MongoDB
+        // est indisponible, l'application doit continuer à fonctionner normalement
+        // (juste sans historique durable), plutôt que de planter TOUTES les requêtes.
+        try {
+            mongoRepository.save(new RequestLogDocument(methode, chemin, origine));
+        } catch (Exception e) {
+            log.warn("Impossible d'écrire le log dans MongoDB (base indisponible ?) : {}", e.getMessage());
         }
     }
 
     public List<RequestLogEntry> getEntreesRecentes() {
-        return Collections.unmodifiableList(entrees);
+        return Collections.unmodifiableList(entreesMemoire);
+    }
+
+    public long getTotalHistorique() {
+        try {
+            return mongoRepository.count();
+        } catch (Exception e) {
+            log.warn("Impossible de lire le total MongoDB : {}", e.getMessage());
+            return -1; // -1 = signal visuel qu'il y a un souci de connexion, à afficher côté template
+        }
+    }
+
+    // Utilisé par le nouvel endpoint de debug, testable depuis Postman
+    public List<RequestLogDocument> getHistoriqueComplet() {
+        return mongoRepository.findAllByOrderByHorodatageDesc();
     }
 }

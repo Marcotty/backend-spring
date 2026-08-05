@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: technical-portfolio-service
+spec:
+  type: LoadBalancer   # sur Minikube, accessible via `minikube service` (pas un vrai LB cloud)
+  selector:
+    app: technical-portfolio   # cible tous les Pods portant ce label — c'est le lien avec le Deployment
+  ports:
+    - port: 80          # port exposé par le Service
+      targetPort: 8080   # port réel écouté par le conteneur (doit matcher containerPort du Deployment)

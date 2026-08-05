@@ -4,14 +4,14 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import static marcotty.softwares.technical_portfolio.diagnostic.Technologie.Statut.A_FAIRE;
 import static marcotty.softwares.technical_portfolio.diagnostic.Technologie.Statut.EN_COURS;
 import static marcotty.softwares.technical_portfolio.diagnostic.Technologie.Statut.IMPLEMENTE;
 
 @Service
 public class TechnologieWatchlistService {
 
-    // Liste extraite d'une offre d'emploi "Backend Developer" — filtrée sur la stack Java.
+    private static final String GITHUB_REPO_URL = "https://github.com/Marcotty/backend-spring";
+
     // Objectif : garder une trace visible de ce qui reste à explorer, avec un exemple concret
     // à reproduire plus tard dans le projet Java Mastery pour chaque techno.
     private final List<Technologie> technologies = List.of(
@@ -26,39 +26,58 @@ public class TechnologieWatchlistService {
         new Technologie(
             "Tests unitaires & d'intégration (JUnit + Mockito)",
             IMPLEMENTE,
-            "Tests d'intégration avec @SpringBootTest et @AutowiredMockMVC sur le contrôleur REST",
-            "ProjetServiceTest teste le service avec un repository mocké, sans toucher à la vraie base de données."
+            "Cycle Red-Green-Refactor appliqué : test unitaire du Service (repository mocké) et test d'intégration du contrôleur REST.",
+            "ProjetServiceTest (Mockito) + ProjetRestControllerTest (@SpringBootTest, MockMvc, base H2 nettoyée avant chaque test)."
         ),
 
         new Technologie(
             "CI/CD",
-            A_FAIRE,
-            "Automatiser build + tests à chaque push, pour détecter les régressions sans lancer les tests à la main.",
-            "À faire : un pipeline GitHub Actions simple qui lance `mvn test` à chaque push, " +
-            "puis ajoute `mvn spring-boot:build-image` une fois les tests passés."
+            IMPLEMENTE,
+            "Pipeline GitHub Actions : lance les tests à chaque push, construit l'image Docker uniquement si les tests passent.",
+            ".github/workflows/ci.yml — deux jobs, dépendance explicite via 'needs: test'. mvnw rendu exécutable en Git et en CI.",
+            GITHUB_REPO_URL + "/actions",
+            "Voir les runs sur GitHub"
         ),
 
         new Technologie(
             "Base de données relationnelle (PostgreSQL)",
             IMPLEMENTE,
-            "Base relationnelle principale du projet, avec JPA/Hibernate pour la persistance.",
-            "ProjetRepository est un JpaRepository standard, avec PostgreSQL en production et H2 pour les tests."
+            "PostgreSQL tourne en conteneur Docker. Bascule H2 ↔ PostgreSQL possible à chaud via AbstractRoutingDataSource.",
+            "Panneau ⚙ sur la page de diagnostic : teste la connexion avant bascule, log chaque étape (RoutingDataSource + DatabaseContext)."
         ),
 
         new Technologie(
             "Base de données NoSQL (MongoDB)",
-            A_FAIRE,
-            "Utile pour des données non structurées ou évolutives (ex: logs, historique d'activité).",
-            "À faire, en piste future : stocker le journal des requêtes (RequestLogEntry) dans MongoDB " +
-            "plutôt qu'en mémoire, pour qu'il survive à un redémarrage."
+            IMPLEMENTE,
+            "Le journal des requêtes (RequestLogEntry) persiste maintenant dans MongoDB plutôt qu'en mémoire — survit aux redémarrages.",
+            "RequestLogDocument + RequestLogMongoRepository. La liste en mémoire reste pour l'affichage rapide (30 dernières), Mongo garde tout l'historique.",
+            "/api/logs/historique",
+            "Voir l'historique (JSON)"
+        ),
+
+        new Technologie(
+            "POSTMAN",
+            IMPLEMENTE,
+            "Outil pour tester les API REST et GraphQL.",
+            "Collection Postman contenant des requêtes pour tester GET /api/projets et autres endpoints."
+        ),
+
+        new Technologie(
+            "SWAGGER / OpenAPI",
+            IMPLEMENTE,
+            "Documentation interactive générée automatiquement depuis les annotations des contrôleurs REST.",
+            "springdoc-openapi-starter-webmvc-ui — interface testable sur /swagger-ui.html, JSON brut sur /v3/api-docs.",
+            "/swagger-ui.html",
+            "Ouvrir Swagger UI"
         ),
 
         new Technologie(
             "GraphQL",
-            A_FAIRE,
-            "Alternative à REST où le client choisit précisément les champs qu'il veut recevoir.",
-            "À faire, en piste future : réécrire GET /api/projets en GraphQL avec `spring-boot-starter-graphql`, " +
-            "et comparer le nombre de requêtes nécessaires depuis Angular."
+            IMPLEMENTE,
+            "Endpoint /graphql en plus de REST — le client choisit précisément les champs qu'il veut recevoir.",
+            "ProjetGraphQLController + schema.graphqls. Testé via Postman (POST avec query/variables) et GraphiQL.",
+            "/graphiql",
+            "Ouvrir GraphiQL"
         ),
 
         new Technologie(
@@ -72,31 +91,34 @@ public class TechnologieWatchlistService {
         new Technologie(
             "Docker",
             IMPLEMENTE,
-            "Docker Compose Support ajouté au projet, et packaging en image et run dans un container.",
-            "."
+            "Backend packagé en image Docker (Cloud Native Buildpacks) et exécuté en conteneur, aux côtés de PostgreSQL et MongoDB.",
+            "./mvnw spring-boot:build-image, puis docker run — l'app tourne entièrement conteneurisée, plus besoin de VS Code/mvnw pour la lancer."
         ),
 
         new Technologie(
             "Kubernetes",
-            A_FAIRE,
-            "Orchestrateur de conteneurs à grande échelle — gère le déploiement, la montée en charge et la résilience automatiquement.",
-            "À explorer une fois plusieurs projets conteneurisés : déployer le portfolio complet sur un " +
-            "cluster local (ex: Minikube ou Docker Desktop Kubernetes intégré)."
+            IMPLEMENTE,
+            "Déploiement sur Google Cloud Run (serverless, basé sur Kubernetes) — l'app est packagée en image Docker et déployée automatiquement.",
+            "Cloud Run gère le scaling automatique, la mise à jour de l'image et la configuration réseau. Le backend est accessible publiquement via HTTPS."
         ),
 
         new Technologie(
             "Cloud (AWS / Azure / GCP)",
-            A_FAIRE,
-            "Hébergement en production — actuellement tout tourne en local uniquement.",
-            "À faire, en piste future : déployer une image Docker construite plus haut sur un service " +
-            "managé simple (ex: AWS App Runner ou Azure Container Apps) pour voir le portfolio en ligne."
+            IMPLEMENTE,
+            "Backend déployé sur Google Cloud Run, réutilisant le compte GCP déjà lié à un projet Firebase existant.",
+            "Pipeline CI/CD complet : push sur main → tests → build image → push Artifact Registry → déploiement automatique.",
+            "https://technical-portfolio-453237497619.europe-west1.run.app/",
+            "Voir le site en ligne"
         ),
+
 
         new Technologie(
             "Git",
             IMPLEMENTE,
-            "Gestion de version - Historique des commits, branches, merges, tags, etc.",
-            "Le projet est versionné sur GitHub, avec des commits réguliers et des branches pour les fonctionnalités."
+            "Dépôt versionné sur GitHub, avec permissions d'exécution correctement gérées (mvnw) pour un fonctionnement fiable en CI.",
+            "git update-index --chmod=+x mvnw — pour que le bit d'exécution survive au checkout, peu importe l'OS source.",
+            GITHUB_REPO_URL,
+            "Voir le dépôt"
         ),
 
         new Technologie(

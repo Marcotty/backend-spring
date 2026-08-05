@@ -52,6 +52,14 @@
             font-size: 11.5px; color: var(--text); background: #0a1a2e; border-left: 2px solid var(--cyan);
             padding: 8px 10px; border-radius: 4px; line-height: 1.5;
         }
+        .tech-lien {
+            display: inline-flex; align-items: center; gap: 6px; margin-top: 10px;
+            font-size: 11.5px; color: var(--cyan); text-decoration: none;
+            padding: 6px 10px; border: 1px solid var(--cyan); border-radius: 6px;
+            transition: background .15s;
+        }
+        .tech-lien:hover { background: rgba(79,209,197,0.1); }
+        .tech-lien svg { width: 12px; height: 12px; }
         @media (max-width: 900px) { .tech-grid { grid-template-columns: 1fr; } }
 
         /* --- Panneau d'options (engrenage) --- */
@@ -133,6 +141,10 @@
         <div class="label">Base active</div>
         <div class="value" th:text="${baseActive}">h2</div>
     </div>
+    <div class="stat">
+        <div class="label">Historique total (MongoDB)</div>
+        <div class="value" th:text="${totalHistorique}">0</div>
+    </div>
 </div>
 
 <table>
@@ -152,7 +164,7 @@
     </tbody>
 </table>
 
-<h2>📋 Technologies à intégrer (stack Java Spring)</h2>
+<h2>📋 Technologies à intégrer — extraites d'une offre d'emploi (stack Java)</h2>
 <div class="tech-grid">
     <div class="tech-card" th:each="t : ${technologies}">
         <div class="tech-top">
@@ -161,6 +173,13 @@
         </div>
         <div class="tech-desc" th:text="${t.description}">Description</div>
         <div class="tech-exemple" th:text="${t.exemple}">Exemple</div>
+        <a th:if="${t.avecLien}" th:href="${t.lienUrl}" th:text="${t.lienLabel}"
+           class="tech-lien" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                <path d="M15 3h6v6"/><path d="M10 14 21 3"/>
+            </svg>
+        </a>
     </div>
 </div>
 

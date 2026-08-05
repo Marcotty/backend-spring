@@ -1,0 +1,17 @@
+type Projet {
+    id: ID
+    nom: String
+    description: String
+    technologies: String
+    url: String
+    statut: String
+    widget: String
+    couleur: String
+    port: Int
+}
+
+# "Query" liste toutes les opérations de LECTURE possibles — l'équivalent des @GetMapping en REST
+type Query {
+    projets: [Projet]        # tous les projets
+    projet(id: ID!): Projet  # un seul projet par id (! = paramètre obligatoire)
+}
